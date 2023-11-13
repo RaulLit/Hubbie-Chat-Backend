@@ -27,7 +27,7 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({ email, token });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(401).json({ error: err.message });
   }
 };
 
@@ -56,7 +56,7 @@ const signupUser = async (req, res) => {
 
     res.status(200).json({ email, token });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(401).json({ error: err.message });
   }
 };
 
