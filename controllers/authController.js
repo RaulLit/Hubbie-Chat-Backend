@@ -25,7 +25,7 @@ const loginUser = async (req, res) => {
     // create a token
     const token = createToken(user._id);
 
-    res.status(200).json({ email, token });
+    res.status(200).json({ name: user.name, email, token });
   } catch (err) {
     res.status(401).json({ error: err.message });
   }
@@ -33,11 +33,11 @@ const loginUser = async (req, res) => {
 
 // Signup user
 const signupUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     // Validation
-    if (!email || !password) throw Error("All fields are required");
+    if (!email || !password || !name) throw Error("All fields are required");
     if (!validator.isEmail(email)) throw Error("Email is not valid");
     if (!validator.isStrongPassword(password)) throw Error("Password not strong enough");
 
@@ -49,15 +49,29 @@ const signupUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const user = await User.create({ email, password: hash });
+    const user = await User.create({ name, email, password: hash });
 
     // create a token
     const token = createToken(user._id);
 
-    res.status(200).json({ email, token });
+    res.status(200).json({ name, email, token });
   } catch (err) {
     res.status(401).json({ error: err.message });
   }
 };
 
-module.exports = { loginUser, signupUser };
+const getAllUsers = async (req, res) => {
+  const q = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: name, $options: "i" } },
+          { email: { $regex: name, $options: "i" } },
+        ],
+      }
+    : {};
+
+  const users = await User.find(q).find({ _id: { $ne: req.user._id } });
+  req.send(users);
+};
+
+module.exports = { loginUser, signupUser, getAllUsers };
