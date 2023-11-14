@@ -64,14 +64,16 @@ const getAllUsers = async (req, res) => {
   const q = req.query.search
     ? {
         $or: [
-          { name: { $regex: name, $options: "i" } },
-          { email: { $regex: name, $options: "i" } },
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
         ],
       }
     : {};
 
-  const users = await User.find(q).find({ _id: { $ne: req.user._id } });
-  req.send(users);
+  const users = await User.find(q)
+    .find({ _id: { $ne: req.user._id } })
+    .select("-password");
+  res.send(users);
 };
 
 module.exports = { loginUser, signupUser, getAllUsers };
