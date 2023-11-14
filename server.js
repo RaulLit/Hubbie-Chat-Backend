@@ -2,7 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const userRoutes = require("./routes/auth");
+const userRoutes = require("./routes/authRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 
 // express app
 const app = express();
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
