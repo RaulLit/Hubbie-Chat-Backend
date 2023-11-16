@@ -7,7 +7,11 @@ const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "7d" });
 };
 
-// Login user
+/**
+ * Log a user in
+ * @route /api/user/login
+ * @method POST
+ */
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -31,7 +35,11 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Signup user
+/**
+ * Sign up a user
+ * @route /api/user/signup
+ * @method POST
+ */
 const signupUser = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -60,6 +68,11 @@ const signupUser = async (req, res) => {
   }
 };
 
+/**
+ * Get users on search
+ * @route /api/user/allUser?search=
+ * @method GET
+ */
 const getAllUsers = async (req, res) => {
   const q = req.query.search
     ? {
