@@ -86,7 +86,7 @@ const getAllUsers = async (req, res) => {
   const users = await User.find(q)
     .find({ _id: { $ne: req.user._id } })
     .select("-password");
-  res.send(users);
+  res.json(users);
 };
 
 module.exports = { loginUser, signupUser, getAllUsers };

@@ -12,8 +12,8 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST", "DELETE", "PATCH"],
+    origin: ["http://localhost:3000", process.env.CLIENT_URL],
+    methods: ["GET", "POST", "DELETE", "PUT"],
   })
 );
 app.use((req, res, next) => {
