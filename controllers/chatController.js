@@ -68,7 +68,7 @@ module.exports.getChats = async (req, res) => {
           path: "latestMessage.sender",
           select: "name email",
         });
-        res.status(200).send(results);
+        res.status(200).json(results);
       });
   } catch (err) {
     res.status(400).json({ error: err.message });

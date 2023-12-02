@@ -12,7 +12,11 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", process.env.CLIENT_URL],
+    origin: [
+      "http://localhost:3000",
+      "https://hubbie-chat.onrender.com",
+      process.env.CLIENT_URL,
+    ],
     methods: ["GET", "POST", "DELETE", "PUT"],
   })
 );
