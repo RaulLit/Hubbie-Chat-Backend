@@ -11,9 +11,14 @@ const requireAuth = async (req, res, next) => {
 
   const token = authorization.split(" ")[1];
   try {
-    const { _id } = jwt.verify(token, process.env.SECRET);
+    const decoded = jwt.verify(token, process.env.SECRET, (err, result) => {
+      if (err && err.name === "TokenExpiredError") return "Token expired";
+      return result;
+    });
 
-    req.user = await User.findOne({ _id }).select("-password");
+    if (decoded === "Token expired")
+      return res.send({ status: "error", message: "Auth token expired" });
+    req.user = await User.findOne({ _id: decoded._id }).select("-password");
     next();
   } catch (err) {
     console.log(err);
