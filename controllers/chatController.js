@@ -99,7 +99,7 @@ module.exports.createGroup = async (req, res) => {
       .populate("users", "-password")
       .populate("groupAdmin", "-password");
 
-    res.status(200).send(fullGroupChat);
+    res.status(200).json(fullGroupChat);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -150,7 +150,7 @@ module.exports.addToGroup = async (req, res) => {
 };
 
 /**
- * Remove user to a group chat
+ * Remove user from a group chat
  * @route /api/chat/group/remove
  * @method PUT
  */
