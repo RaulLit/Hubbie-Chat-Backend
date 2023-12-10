@@ -3,7 +3,7 @@ const Message = require("../models/Message");
 const User = require("../models/User");
 
 /**
- * Remove user from a group chat
+ * Send a message
  * @route /api/message/
  * @method POST
  */
@@ -40,7 +40,7 @@ module.exports.sendMessage = async (req, res) => {
 };
 
 /**
- * Remove user from a group chat
+ * Retrieve messages of a chat
  * @route /api/message/:chatId
  * @method GET
  */
