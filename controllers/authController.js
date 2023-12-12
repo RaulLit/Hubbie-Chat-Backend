@@ -31,6 +31,7 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({ _id: user._id, name: user.name, email, token });
   } catch (err) {
+    console.log(err.message);
     res.status(401).json({ error: err.message });
   }
 };
@@ -43,11 +44,17 @@ const loginUser = async (req, res) => {
 const signupUser = async (req, res) => {
   const { name, email, password } = req.body;
 
+  const isStrongOptions = {
+    minUppercase: 0,
+    minSymbols: 0,
+  };
+
   try {
     // Validation
     if (!email || !password || !name) throw Error("All fields are required");
     if (!validator.isEmail(email)) throw Error("Email is not valid");
-    if (!validator.isStrongPassword(password)) throw Error("Password not strong enough");
+    if (!validator.isStrongPassword(password, isStrongOptions))
+      throw Error("Password not strong enough");
 
     // Check if email already registered
     const exist = await User.findOne({ email });
@@ -64,6 +71,7 @@ const signupUser = async (req, res) => {
 
     res.status(200).json({ _id: user._id, name, email, token });
   } catch (err) {
+    console.log(err.message);
     res.status(401).json({ error: err.message });
   }
 };
