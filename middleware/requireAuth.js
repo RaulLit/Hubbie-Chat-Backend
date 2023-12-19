@@ -17,7 +17,7 @@ const requireAuth = async (req, res, next) => {
     });
 
     if (decoded === "Token expired")
-      return res.send({ status: "error", message: "Auth token expired" });
+      return res.json({ status: "error", message: "Auth token expired" });
     req.user = await User.findOne({ _id: decoded._id }).select("-password");
     next();
   } catch (err) {
