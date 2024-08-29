@@ -74,7 +74,7 @@ module.exports.signup = async (req, res) => {
             message: "User created and verification mail sent successfully",
           });
         } else {
-          res.status(400).json({
+          res.status(500).json({
             status: "error",
             message: "We cannot send you a verification email. Try again",
           });
@@ -82,11 +82,11 @@ module.exports.signup = async (req, res) => {
       })
       .catch((err) => {
         console.log("Error", err);
-        res.status(502).json({ status: "error", message: err.message });
+        res.status(500).json({ status: "error", message: err.message });
       });
   } catch (err) {
     console.log(err);
-    res.status(401).json({ status: "error", message: err.message });
+    res.status(400).json({ status: "error", message: err.message });
   }
 };
 
@@ -133,7 +133,7 @@ module.exports.login = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(401).json({ status: "error", message: err.message });
+    res.status(400).json({ status: "error", message: err.message });
   }
 };
 
@@ -166,7 +166,7 @@ module.exports.resend = async (req, res) => {
       })
       .catch((err) => {
         console.log(err);
-        res.status(502).json({ status: "error", message: err.message });
+        res.status(500).json({ status: "error", message: err.message });
       });
   } catch (err) {
     console.log(err);
