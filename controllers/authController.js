@@ -7,7 +7,7 @@ const {
   emailTemplateOTP,
   sendEmail,
   emailTemplateResetPassword,
-} = require("../utility/Utility");
+} = require("../utility/utility");
 const ResetPassword = require("../models/ResetPassword");
 
 const createToken = (_id) => {
