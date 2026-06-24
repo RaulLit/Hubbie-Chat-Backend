@@ -8,11 +8,12 @@ const User = require("../models/User");
  */
 module.exports.getAllUsers = async (req, res) => {
   try {
-    const q = req.query.search
+    const search = req.query.search;
+    const q = search
       ? {
           $or: [
-            { name: { $regex: req.query.search, $options: "i" } },
-            { email: { $regex: req.query.search, $options: "i" } },
+            { name: { $regex: search.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"), $options: "i" } },
+            { email: { $regex: search.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"), $options: "i" } },
           ],
         }
       : {};

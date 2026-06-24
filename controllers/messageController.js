@@ -15,6 +15,17 @@ module.exports.sendMessage = async (req, res) => {
       console.log("Invalid request body");
       throw Error("Invalid Request: Parameters missing");
     }
+
+    const chatInfo = await Chat.findById(chatId);
+    if (!chatInfo) {
+      throw Error("Chat not found");
+    }
+    const isMember = chatInfo.users.some(
+      (userId) => userId.toString() === req.user._id.toString()
+    );
+    if (!isMember) {
+      return res.status(403).json({ error: "Access denied: You are not a member of this chat" });
+    }
     const newMessage = {
       sender: req.user._id,
       content,
@@ -47,6 +58,17 @@ module.exports.sendMessage = async (req, res) => {
 module.exports.getMessages = async (req, res) => {
   const { chatId } = req.params;
   try {
+    const chatInfo = await Chat.findById(chatId);
+    if (!chatInfo) {
+      throw Error("Chat not found");
+    }
+    const isMember = chatInfo.users.some(
+      (userId) => userId.toString() === req.user._id.toString()
+    );
+    if (!isMember) {
+      return res.status(403).json({ error: "Access denied: You are not a member of this chat" });
+    }
+
     const messages = await Message.find({ chat: chatId })
       .populate("sender", "name email")
       .populate("chat");

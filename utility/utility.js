@@ -1,14 +1,13 @@
 const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
 /**
  * Generate a random numeric OTP of given length. Default length is 6.
  */
 module.exports.generateOTP = (length = 6) => {
   var result = "";
-  var characters = "0123456789";
-  var charLen = characters.length;
   for (var i = 0; i < length; i++) {
-    result += characters[Math.floor(Math.random() * charLen)];
+    result += crypto.randomInt(0, 10).toString();
   }
   return result;
 };

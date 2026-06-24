@@ -39,5 +39,20 @@ mongoose
 
     // Initialise socket.io
     initialize(express_server, corsConfig);
+
+    // Graceful shutdown
+    const gracefulShutdown = (signal) => {
+      console.log(`${signal} received. Closing HTTP and database connections...`);
+      express_server.close(() => {
+        console.log("HTTP server closed.");
+        mongoose.connection.close().then(() => {
+          console.log("Mongoose connection closed.");
+          process.exit(0);
+        });
+      });
+    };
+
+    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
   })
   .catch((err) => console.log(err));

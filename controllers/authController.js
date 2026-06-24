@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const {
@@ -231,7 +232,7 @@ module.exports.forgot = async (req, res) => {
 
     let resetPass = {
       userId: user._id,
-      resetKey: Math.random().toString(36).substring(2),
+      resetKey: crypto.randomBytes(32).toString("hex"),
     };
 
     const resetPassword = await ResetPassword.create(resetPass);

@@ -24,4 +24,6 @@ const resetPasswordSchema = new Schema(
   }
 );
 
+resetPasswordSchema.index({ createdAt: 1 }, { expireAfterSeconds: 900 });
+
 module.exports = mongoose.model("ResetPassword", resetPasswordSchema);
