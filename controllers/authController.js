@@ -108,20 +108,40 @@ module.exports.login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) throw Error(`User with email '${email}' not found`);
 
-    // Check if user is verfied
-    // if (!user.verified)
-    //   throw Error(
-    //     "User not verified. Check your email and verify your account to continue."
-    //   );
-    if (!user.verified) {
-      res
-        .status(400)
-        .json({ status: "error", data: { _id: user._id }, message: "User not verified" });
-    } else {
-      // Match password
-      const match = await bcrypt.compare(password, user.password);
-      if (!match) throw Error("Incorrect password");
+    // Match password
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) throw Error("Incorrect password");
 
+    if (!user.verified) {
+      // Generate new OTP and save it
+      const newOtp = generateOTP();
+      user.otp = newOtp;
+      await user.save();
+
+      // Send verification email
+      const confirmLink = `${process.env.CLIENT_URL}/verify/${user.email}/${user._id}`;
+      const message = emailTemplateOTP(user.name, user.otp, confirmLink);
+
+      sendEmail(user.email, "Hubbie Chat - Account Verification", message)
+        .then((info) => {
+          if (info) {
+            res.status(200).json({
+              status: "success",
+              data: { id: user._id, email: user.email, requiresVerification: true },
+              message: "Verification email sent successfully. Verify your account to continue.",
+            });
+          } else {
+            res.status(500).json({
+              status: "error",
+              message: "We cannot send you a verification email. Try again",
+            });
+          }
+        })
+        .catch((err) => {
+          console.log("Error sending verification email:", err);
+          res.status(500).json({ status: "error", message: err.message });
+        });
+    } else {
       // create a token
       const token = createToken(user._id);
 

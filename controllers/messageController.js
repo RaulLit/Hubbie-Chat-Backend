@@ -30,6 +30,7 @@ module.exports.sendMessage = async (req, res) => {
       sender: req.user._id,
       content,
       chat: chatId,
+      readBy: [req.user._id],
     };
     var message = await Message.create(newMessage);
     message = await message.populate("sender", "name");
@@ -73,6 +74,38 @@ module.exports.getMessages = async (req, res) => {
       .populate("sender", "name email")
       .populate("chat");
     res.status(200).json(messages);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ error: err.message });
+  }
+};
+
+/**
+ * Mark messages in a chat as read
+ * @route /api/message/read
+ * @method PUT
+ */
+module.exports.readMessages = async (req, res) => {
+  const { chatId } = req.body;
+  try {
+    if (!chatId) throw Error("chatId is required");
+
+    const chatInfo = await Chat.findById(chatId);
+    if (!chatInfo) throw Error("Chat not found");
+
+    const isMember = chatInfo.users.some(
+      (userId) => userId.toString() === req.user._id.toString()
+    );
+    if (!isMember) {
+      return res.status(403).json({ error: "Access denied: You are not a member of this chat" });
+    }
+
+    await Message.updateMany(
+      { chat: chatId, sender: { $ne: req.user._id }, readBy: { $ne: req.user._id } },
+      { $addToSet: { readBy: req.user._id } }
+    );
+
+    res.status(200).json({ status: "success", message: "Messages marked as read" });
   } catch (err) {
     console.log(err);
     res.status(400).json({ error: err.message });

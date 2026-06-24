@@ -109,6 +109,12 @@ const initialize = (exp_server, corsConfig) => {
       });
     });
 
+    // read receipt socket
+    socket.on("read_receipt", (data) => {
+      if (!data || !data.chatId) return;
+      socket.in(data.chatId).emit("message_read", data);
+    });
+
     // disconnect socket
     socket.on("disconnect", () => {
       console.log("Socket disconnected:", socket.id);

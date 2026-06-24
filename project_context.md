@@ -51,7 +51,7 @@ backend/
 ## 🛣️ API Routes Outline
 
 ### 1. Authentication Routes (`/api/auth`)
-* `POST /login` -> Logs in the user, signs JWT token, and returns `token` cookie.
+* `POST /login` -> Matches credentials. If user is unverified, generates a new OTP, sends verification email, and returns `requiresVerification: true`. If verified, signs JWT token and returns `token` cookie.
 * `POST /signup` -> Registers a new user, hashes password, generates OTP, and emails verification link.
 * `POST /confirm/:id` -> Confirms registration using verification OTP parameters.
 * `POST /forgot` -> Requests a password reset link and generates reset token.
@@ -71,6 +71,7 @@ backend/
 
 ### 3. Message Routes (`/api/message`) *(Requires requireAuth middleware)*
 * `POST /` -> Sends a new message in a chat (restricted to chat participants).
+* `PUT /read` -> Marks all messages in a chat as read by this user.
 * `GET /:chatId` -> Retrieves messages of a chat (restricted to chat participants).
 
 ### 4. User Routes (`/api/user`) *(Requires requireAuth middleware)*
@@ -100,6 +101,7 @@ backend/
 * `sender` (ObjectId, ref: `User`) -> Reference to the message sender.
 * `content` (String, trimmed) -> Text content of the message.
 * `chat` (ObjectId, ref: `Chat`) -> Target chat room.
+* `readBy` (Array of ObjectIds, ref: `User`) -> Participants who have read this message.
 
 ### 4. ResetPassword Schema (`ResetPassword`)
 * `userId` (ObjectId, ref: `User`, required) -> User requesting reset.
