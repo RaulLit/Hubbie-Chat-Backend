@@ -1,6 +1,21 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+
+// Convert _id to id when serializing documents to JSON/Objects
+mongoose.plugin((schema) => {
+  const transform = (doc, ret) => {
+    if (ret._id) {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    }
+    delete ret.__v;
+    return ret;
+  };
+  schema.set("toJSON", { virtuals: true, transform });
+  schema.set("toObject", { virtuals: true, transform });
+});
+
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const initRoutes = require("./routes");
