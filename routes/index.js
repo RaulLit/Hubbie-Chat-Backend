@@ -5,6 +5,11 @@ const messageRoutes = require("./messageRoutes");
 const requireAuth = require("../middleware/requireAuth");
 
 const initRoutes = (app) => {
+  // Public ping endpoint for spin-up check
+  app.get("/api/ping", (req, res) => {
+    res.status(200).json({ status: "ok", message: "pong" });
+  });
+
   // Initialising routes
   app.use("/api/auth", authRoutes);
 
