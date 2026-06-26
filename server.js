@@ -2,28 +2,24 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const initRoutes = require("./routes");
 const { initialize } = require("./sockets");
-
-// Routes
-const userRoutes = require("./routes/authRoutes");
-const chatRoutes = require("./routes/chatRoutes");
-const messageRoutes = require("./routes/messageRoutes");
 
 // express app
 const app = express();
 
-// cors config
+// cors config (required for express and socket)
 const corsConfig = {
-  origin: [
-    "http://localhost:3000",
-    "https://hubbie-chat.onrender.com",
-    process.env.CLIENT_URL,
-  ],
+  origin: [...process.env.CLIENT_URL.split(","), "http://localhost:3000"],
   methods: ["GET", "POST", "DELETE", "PUT"],
+  credentials: true,
 };
 
 // middleware
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors(corsConfig));
 app.use((req, res, next) => {
   console.log(req.path, req.method);
@@ -31,9 +27,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use("/api/user", userRoutes);
-app.use("/api/chat", chatRoutes);
-app.use("/api/message", messageRoutes);
+initRoutes(app);
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -45,5 +39,20 @@ mongoose
 
     // Initialise socket.io
     initialize(express_server, corsConfig);
+
+    // Graceful shutdown
+    const gracefulShutdown = (signal) => {
+      console.log(`${signal} received. Closing HTTP and database connections...`);
+      express_server.close(() => {
+        console.log("HTTP server closed.");
+        mongoose.connection.close().then(() => {
+          console.log("Mongoose connection closed.");
+          process.exit(0);
+        });
+      });
+    };
+
+    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
   })
   .catch((err) => console.log(err));
