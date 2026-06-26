@@ -41,7 +41,7 @@ module.exports.sendMessage = async (req, res) => {
     });
 
     await Chat.findByIdAndUpdate(chatId, {
-      latestMessage: message,
+      latestMessage: message._id,
     });
 
     res.status(200).json(message);
